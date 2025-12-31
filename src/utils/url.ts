@@ -29,6 +29,18 @@ export function cleanUrl(href: string): string | null {
 
     cleanUrl = cleanUrl.replace(/^https?:\/\/\/+/, 'https://');
     cleanUrl = cleanUrl.replace(/^\/\//, 'https://');
+    
+    if (cleanUrl.includes('duckduckgo.com/l/')) {
+      try {
+        const urlObj = new URL(cleanUrl);
+        const uddgParam = urlObj.searchParams.get('uddg');
+        if (uddgParam) {
+          cleanUrl = decodeURIComponent(uddgParam);
+        }
+      } catch {
+        // Keep original if parsing fails
+      }
+    }
 
     if (!cleanUrl.startsWith('http')) {
       return null;

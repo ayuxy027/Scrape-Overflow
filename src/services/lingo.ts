@@ -115,9 +115,10 @@ export class LingoTranslationService implements TranslationService {
 
       if (translations && translations.length > 0) {
         queries.push(...translations);
+        console.log(`  🌍 Translated query to ${translations.length} languages`);
       }
-    } catch {
-      // Return original query only
+    } catch (error) {
+      console.log(`  ⚠️ Query translation failed: ${error}`);
     }
 
     return [...new Set(queries)];
