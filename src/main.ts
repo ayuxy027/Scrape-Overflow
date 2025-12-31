@@ -4,6 +4,8 @@ import { validateInput } from './utils/validation.js';
 import { LingoTranslationService } from './services/lingo.js';
 import { scrapeStackOverflow } from './scrapers/stackoverflow.js';
 import { scrapeGoogle } from './scrapers/google.js';
+import { scrapeDuckDuckGo } from './scrapers/duckduckgo.js';
+import { scrapeBlogs } from './scrapers/blogs.js';
 import { scrapeAnswerBodies } from './scrapers/answers.js';
 import { getLanguageFlag } from './config/constants.js';
 import { DEFAULT_CONFIG } from './config/defaults.js';
@@ -65,15 +67,68 @@ try {
   });
   allResults.push(...soResults);
 
-  const googleResults = await scrapeGoogle({
-    queries: queryVariants,
-    maxResults: googleLinks,
-    targetLang,
-    translationService,
-    proxyConfiguration: rawInput.proxyConfiguration,
-    existingResultsCount: soResults.length,
-  });
-  allResults.push(...googleResults);
+  let googleResults: ScrapedResult[] = [];
+  
+  try {
+    googleResults = await scrapeGoogle({
+      queries: queryVariants,
+      maxResults: googleLinks,
+      targetLang,
+      translationService,
+      proxyConfiguration: rawInput.proxyConfiguration,
+      existingResultsCount: soResults.length,
+    });
+    allResults.push(...googleResults);
+  } catch (error) {
+    console.log(`  ⚠️ Google search failed: ${error}`);
+  }
+
+  if (googleResults.length === 0 && googleLinks > 0) {
+    console.log('\n  🔄 Google returned 0 results, trying DuckDuckGo as fallback...');
+    try {
+      const duckDuckGoResults = await scrapeDuckDuckGo({
+        queries: queryVariants,
+        maxResults: googleLinks,
+        targetLang,
+        translationService,
+        proxyConfiguration: rawInput.proxyConfiguration,
+        existingResultsCount: soResults.length,
+      });
+      allResults.push(...duckDuckGoResults);
+      googleResults = duckDuckGoResults;
+      
+      if (duckDuckGoResults.length === 0) {
+        console.log('  🔄 DuckDuckGo also returned 0 results, trying blog search...');
+        const blogResults = await scrapeBlogs({
+          queries: queryVariants,
+          maxResults: googleLinks,
+          targetLang,
+          translationService,
+          proxyConfiguration: rawInput.proxyConfiguration,
+          existingResultsCount: soResults.length,
+        });
+        allResults.push(...blogResults);
+        googleResults = blogResults;
+      }
+    } catch (ddgError) {
+      console.log(`  ⚠️ DuckDuckGo failed: ${ddgError}`);
+      try {
+        console.log('  🔄 Trying blog search as final fallback...');
+        const blogResults = await scrapeBlogs({
+          queries: queryVariants,
+          maxResults: googleLinks,
+          targetLang,
+          translationService,
+          proxyConfiguration: rawInput.proxyConfiguration,
+          existingResultsCount: soResults.length,
+        });
+        allResults.push(...blogResults);
+        googleResults = blogResults;
+      } catch (blogError) {
+        console.log(`  ❌ All search methods failed`);
+      }
+    }
+  }
 
   if (includeAnswerBody) {
     await scrapeAnswerBodies({

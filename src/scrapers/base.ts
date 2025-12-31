@@ -6,7 +6,27 @@ export async function detectCaptcha(page: Page): Promise<boolean> {
   try {
     const bodyText = await page.locator('body').textContent();
     const lowerText = bodyText?.toLowerCase() || '';
-    return lowerText.includes('unusual traffic') || lowerText.includes('captcha');
+    
+    const captchaIndicators = [
+      'unusual traffic from your computer network',
+      'our systems have detected unusual traffic',
+      'sorry, we have detected unusual traffic',
+      'captcha',
+      'verify you\'re not a robot',
+      'verify you are not a robot'
+    ];
+    
+    const hasCaptcha = captchaIndicators.some(indicator => lowerText.includes(indicator));
+    
+    if (hasCaptcha) {
+      const title = await page.title();
+      const titleLower = title.toLowerCase();
+      if (titleLower.includes('captcha') || titleLower.includes('verify')) {
+        return true;
+      }
+    }
+    
+    return false;
   } catch {
     return false;
   }

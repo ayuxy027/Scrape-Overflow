@@ -11,6 +11,14 @@ export function cleanUrl(href: string): string | null {
       cleanUrl = urlObj.searchParams.get('q') || href;
     }
 
+    if (href.includes('uddg=')) {
+      const urlObj = new URL(href);
+      const uddgParam = urlObj.searchParams.get('uddg');
+      if (uddgParam) {
+        cleanUrl = decodeURIComponent(uddgParam);
+      }
+    }
+
     if (cleanUrl.includes('&')) {
       cleanUrl = cleanUrl.split('&')[0];
     }
@@ -18,6 +26,9 @@ export function cleanUrl(href: string): string | null {
     if (cleanUrl.includes('#')) {
       cleanUrl = cleanUrl.split('#')[0];
     }
+
+    cleanUrl = cleanUrl.replace(/^https?:\/\/\/+/, 'https://');
+    cleanUrl = cleanUrl.replace(/^\/\//, 'https://');
 
     if (!cleanUrl.startsWith('http')) {
       return null;

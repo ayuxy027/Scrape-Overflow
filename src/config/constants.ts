@@ -30,10 +30,16 @@ export const GOOGLE_DOMAINS = ['google.com', 'gstatic.com'];
 
 export const SELECTORS = {
   stackOverflowLinks: 'a[href*="stackoverflow.com/questions"]',
-  googleResultLinks: '#search a[href^="http"]',
+  googleResultLinks: [
+    '#search a[href^="http"]:not([href*="google.com"]):not([href*="gstatic.com"])',
+    'div[data-hveid] a[href^="http"]:not([href*="google.com"])',
+    'div.g a[href^="http"]:not([href*="google.com"])',
+    'a[href^="http"]:not([href*="google.com"]):not([href*="gstatic.com"])',
+  ],
   stackOverflowAcceptedAnswer: '.accepted-answer .answercell .s-prose',
   stackOverflowFirstAnswer: '.answer .answercell .s-prose',
   googleResultParent: 'xpath=ancestor::div[contains(@class, "g") or @data-hveid][1]',
+  googleSearchContainer: '#search, #rso, #main',
 } as const;
 
 export function getLanguageFlag(lang: string): string {

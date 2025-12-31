@@ -41,16 +41,36 @@ export async function scrapeStackOverflow(
       console.log(`  📄 Processing: ${request.url.slice(0, 80)}...`);
 
       await page.waitForLoadState('domcontentloaded');
+      await page.waitForTimeout(2000);
 
-      if (await detectCaptcha(page)) {
-        console.log('  ⚠️ CAPTCHA detected, skipping...');
-        return;
+      const hasCaptcha = await detectCaptcha(page);
+      if (hasCaptcha) {
+        console.log('  ⚠️ CAPTCHA detected, attempting to extract results anyway...');
       }
 
-      await page.waitForTimeout(1500);
+      let soLinks: any[] = [];
+      try {
+        soLinks = await page.locator(SELECTORS.stackOverflowLinks).all();
+        console.log(`  📊 Found ${soLinks.length} Stack Overflow links`);
+        
+        if (soLinks.length === 0) {
+          console.log('  ⚠️ No SO links found, trying fallback selector...');
+          const fallbackLinks = await page.locator('a[href*="stackoverflow.com"]').all();
+          console.log(`  📊 Found ${fallbackLinks.length} links with fallback selector`);
+          soLinks = fallbackLinks;
+        }
+      } catch (e) {
+        console.log(`  ⚠️ Error finding SO links: ${e}`);
+      }
 
-      const soLinks = await page.locator(SELECTORS.stackOverflowLinks).all();
-      console.log(`  📊 Found ${soLinks.length} Stack Overflow links`);
+      if (soLinks.length === 0) {
+        if (hasCaptcha) {
+          console.log('  ❌ CAPTCHA confirmed, skipping page');
+          return;
+        }
+        console.log('  ⚠️ No Stack Overflow links found on page');
+        return;
+      }
 
       for (const link of soLinks) {
         if (foundUrls.size >= maxResults) break;

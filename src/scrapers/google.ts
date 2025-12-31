@@ -49,16 +49,75 @@ export async function scrapeGoogle(
       console.log(`  📄 Processing: ${request.url.slice(0, 80)}...`);
 
       await page.waitForLoadState('domcontentloaded');
+      await page.waitForTimeout(2000);
 
-      if (await detectCaptcha(page)) {
-        console.log('  ⚠️ CAPTCHA detected, skipping...');
-        return;
+      const hasCaptcha = await detectCaptcha(page);
+      if (hasCaptcha) {
+        console.log('  ⚠️ CAPTCHA detected, attempting to extract results anyway...');
       }
 
-      await page.waitForTimeout(1500);
+      let searchLinks: any[] = [];
+      
+      for (const selector of SELECTORS.googleResultLinks) {
+        try {
+          const links = await page.locator(selector).all();
+          if (links.length > 0) {
+            searchLinks = links;
+            console.log(`  📊 Found ${searchLinks.length} result links using selector: ${selector.slice(0, 50)}...`);
+            break;
+          }
+        } catch (e) {
+          continue;
+        }
+      }
 
-      const searchLinks = await page.locator(SELECTORS.googleResultLinks).all();
-      console.log(`  📊 Found ${searchLinks.length} result links`);
+      if (searchLinks.length === 0) {
+        console.log('  ⚠️ No results found with primary selectors, trying comprehensive fallback...');
+        
+        try {
+          const allLinks = await page.locator('a[href^="http"]').all();
+          console.log(`  📊 Found ${allLinks.length} total HTTP links on page`);
+          
+          const excludedDomains = ['google.com', 'gstatic.com', 'youtube.com', 'maps.google.com', 'accounts.google.com'];
+          
+          for (const link of allLinks) {
+            const href = await link.getAttribute('href');
+            if (!href) continue;
+            
+            const isExcluded = excludedDomains.some(domain => href.includes(domain));
+            if (isExcluded) continue;
+            
+            const linkText = await link.textContent();
+            if (linkText && linkText.trim().length > 5) {
+              const cleaned = cleanUrl(href);
+              if (cleaned && !foundUrls.has(cleaned)) {
+                searchLinks.push(link);
+                if (searchLinks.length >= 30) break;
+              }
+            }
+          }
+          
+          console.log(`  📊 Filtered to ${searchLinks.length} valid result links`);
+        } catch (e) {
+          console.log(`  ⚠️ Fallback selector failed: ${e}`);
+        }
+      }
+
+      if (searchLinks.length === 0) {
+        const pageText = await page.locator('body').textContent();
+        const pageTitle = await page.title();
+        console.log(`  ⚠️ No results found. Page title: "${pageTitle}"`);
+        console.log(`  📄 Page text length: ${pageText?.length || 0} chars`);
+        
+        if (hasCaptcha || pageTitle.toLowerCase().includes('captcha') || pageTitle.toLowerCase().includes('verify')) {
+          console.log('  ❌ CAPTCHA confirmed, skipping page');
+          return;
+        }
+        
+        console.log('  ⚠️ Page loaded but no search results found');
+        console.log('  💡 Tip: Try DuckDuckGo or blog-specific searches as fallback');
+        return;
+      }
 
       for (const link of searchLinks) {
         if (results.length >= (existingResultsCount + maxResults)) break;

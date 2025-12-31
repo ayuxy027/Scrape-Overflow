@@ -10,5 +10,5 @@ export const DEFAULT_CONFIG = {
   maxAnswerLength: 2000,
   maxSnippetLength: 300,
   maxAnswerUrls: 10,
-  queryTranslationLanguages: ['en', 'es', 'de', 'fr', 'ja', 'pt'],
+  queryTranslationLanguages: ['en', 'es', 'fr', 'de', 'ja', 'hi'],
 } as const;
