@@ -1,0 +1,40 @@
+{
+  "title": "Stack Overflow + GitHub Context Scraper",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "searchQuery": {
+      "type": "string",
+      "title": "Stack Overflow Search Query",
+      "description": "What you want to search (e.g. 'puppeteer login not working')",
+      "prefill": "crawlee timeout error",
+      "editor": "textfield"
+    },
+    "stackOverflowLinks": {
+      "type": "integer",
+      "title": "Stack Overflow Links",
+      "description": "Number of Stack Overflow links to return (0-50)",
+      "minimum": 0,
+      "maximum": 50,
+      "default": 5,
+      "editor": "number"
+    },
+    "googleLinks": {
+      "type": "integer",
+      "title": "Google Search Links",
+      "description": "Number of general Google search links to return (0-50)",
+      "minimum": 0,
+      "maximum": 50,
+      "default": 5,
+      "editor": "number"
+    },
+    "proxyConfiguration": {
+      "title": "Proxy Configuration",
+      "type": "object",
+      "description": "Use Apify proxies to avoid blocks (recommended)",
+      "editor": "proxy",
+      "default": { "useApifyProxy": true }
+    }
+  },
+  "required": ["searchQuery"]
+}

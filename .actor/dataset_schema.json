@@ -1,0 +1,62 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "type": "object",
+    "properties": {
+      "source": {
+        "type": "string",
+        "enum": ["stackoverflow", "google"],
+        "description": "Data source (Stack Overflow or Google)"
+      },
+      "title": {
+        "type": "string",
+        "description": "Question title or page title"
+      },
+      "url": {
+        "type": "string",
+        "format": "uri",
+        "description": "URL to the question or page"
+      },
+      "summary": {
+        "type": "string",
+        "description": "Brief summary or snippet from search results"
+      }
+    },
+    "required": ["source", "title", "url", "summary"]
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "description": "All scraped results from Stack Overflow and Google",
+      "transformation": {
+        "fields": [
+          "source",
+          "title",
+          "url",
+          "summary"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "source": {
+            "label": "Source",
+            "format": "text"
+          },
+          "title": {
+            "label": "Title",
+            "format": "text"
+          },
+          "url": {
+            "label": "URL",
+            "format": "link"
+          },
+          "summary": {
+            "label": "Summary",
+            "format": "text"
+          }
+        }
+      }
+    }
+  }
+}

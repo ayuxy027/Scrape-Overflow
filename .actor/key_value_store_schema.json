@@ -1,0 +1,19 @@
+{
+  "actorKeyValueStoreSchemaVersion": 1,
+  "title": "ScrapOverflow Key-Value Store",
+  "description": "Storage for actor state and metadata",
+  "collections": {
+    "input": {
+      "title": "Input",
+      "description": "Actor input configuration",
+      "key": "INPUT",
+      "contentTypes": ["application/json"]
+    },
+    "output": {
+      "title": "Output",
+      "description": "Actor execution output metadata",
+      "key": "OUTPUT",
+      "contentTypes": ["application/json"]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Stack Overflow + GitHub Context Scraper Output",
+  "properties": {
+    "dataset": {
+      "type": "string",
+      "title": "Dataset with scraped results",
+      "description": "Stack Overflow questions and GitHub profile data",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}
