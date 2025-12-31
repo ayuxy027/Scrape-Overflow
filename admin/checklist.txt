@@ -1,0 +1,32 @@
+# Lingo × Apify Actor Hackathon Requirements
+
+# 1. Core Function
+# - Must be a serverless scraper, automation, or AI agent published as an Apify Actor (Node.js, Python, or shell).
+
+# 2. Multilingual / Localisation Hook
+# - Integrate the Lingo.dev API at least once to:
+#   - Translate Actor error/log messages, OR
+#   - Localise scraped content, OR
+#   - Auto-translate README snippets, OR
+#   - Generate multi-language metadata/tags, etc.
+# - Lingo.dev usage must be live code (not hard-coded text).
+
+# 3. Actor Quality Bar
+# - Quality score at least 65/100 (Apify metric).
+# - Public listing, pay-per-usage only.
+# - Clear input & output schemas.
+# - Unique README with usage examples.
+
+# 4. Novelty Window
+# - Actor first published after 3 Nov 2025.
+
+# 5. Content Restrictions
+# - Do not submit actors that are raw dumps from restricted sources (e.g., YouTube, LinkedIn, Instagram, Facebook, TikTok, X, Amazon, Google Maps/Search/Trends, Apollo.io).
+# - No spam, fake runs, or license violations.
+
+# 6. Deadline
+# - Actor must be live and quality snapshot recorded by 31 Dec 2025, 23:59 UTC.
+
+# 7. Prize Eligibility
+# - Participant must be at least 18 years old, not Apify staff/contractor, not under sanctions.
+# - KYC required to receive the bounty (PayPal or wire).
