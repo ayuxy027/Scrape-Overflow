@@ -1,7 +1,3 @@
-/**
- * Stack Overflow scraper
- */
-
 import { PlaywrightCrawler } from 'crawlee';
 import { Actor } from 'apify';
 import { ScrapedResult, ActorInput } from '../types/index.js';
@@ -105,4 +101,3 @@ export async function scrapeStackOverflow(
 
   return results;
 }
-

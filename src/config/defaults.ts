@@ -1,7 +1,3 @@
-/**
- * Default configuration values
- */
-
 export const DEFAULT_CONFIG = {
   targetLang: 'en',
   stackOverflowLinks: 5,
@@ -16,4 +12,3 @@ export const DEFAULT_CONFIG = {
   maxAnswerUrls: 10,
   queryTranslationLanguages: ['en', 'es', 'de', 'fr', 'ja', 'pt'],
 } as const;
-

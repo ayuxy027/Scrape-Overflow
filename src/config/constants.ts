@@ -1,7 +1,3 @@
-/**
- * Application constants
- */
-
 export const LANGUAGE_FLAGS: Record<string, string> = {
   en: '🇺🇸',
   es: '🇪🇸',
@@ -43,4 +39,3 @@ export const SELECTORS = {
 export function getLanguageFlag(lang: string): string {
   return LANGUAGE_FLAGS[lang] || DEFAULT_FLAG;
 }
-

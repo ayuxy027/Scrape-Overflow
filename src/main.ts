@@ -1,10 +1,3 @@
-/**
- * ScrapOverflow - Main Actor Entry Point
- * 
- * Orchestrates multilingual Stack Overflow and Google search scraping
- * with AI-powered translation via Lingo.dev
- */
-
 import { Actor } from 'apify';
 import { ActorInput, ScrapedResult } from './types/index.js';
 import { validateInput } from './utils/validation.js';
@@ -18,10 +11,6 @@ import { DEFAULT_CONFIG } from './config/defaults.js';
 await Actor.init();
 
 try {
-  // ============================================================================
-  // INPUT VALIDATION & CONFIGURATION
-  // ============================================================================
-
   const rawInput = (await Actor.getInput<ActorInput>()) ?? {};
   const config = validateInput(rawInput);
 
@@ -35,10 +24,6 @@ try {
     lingoApiKey,
   } = config;
 
-  // ============================================================================
-  // INITIALIZATION LOG
-  // ============================================================================
-
   console.log('🚀 ScrapOverflow - Multilingual Developer Search');
   console.log('================================================');
   console.log(`📝 Query: "${searchQuery}"`);
@@ -47,10 +32,6 @@ try {
   console.log(`🔄 Translate query: ${translateQuery}`);
   console.log(`📖 Include answers: ${includeAnswerBody}`);
   console.log('');
-
-  // ============================================================================
-  // TRANSLATION SERVICE INITIALIZATION
-  // ============================================================================
 
   const translationService = new LingoTranslationService({
     apiKey: lingoApiKey,
@@ -66,10 +47,6 @@ try {
     console.log('✅ Lingo.dev translation service initialized');
   }
 
-  // ============================================================================
-  // QUERY TRANSLATION
-  // ============================================================================
-
   const queryVariants = translateQuery
     ? await translationService.translateQueryToLanguages(searchQuery)
     : [searchQuery];
@@ -77,13 +54,8 @@ try {
   console.log(`\n📋 Search queries (${queryVariants.length} variants):`);
   queryVariants.forEach((q, i) => console.log(`   ${i + 1}. ${q}`));
 
-  // ============================================================================
-  // SCRAPING EXECUTION
-  // ============================================================================
-
   const allResults: ScrapedResult[] = [];
 
-  // Scrape Stack Overflow
   const soResults = await scrapeStackOverflow({
     queries: queryVariants,
     maxResults: stackOverflowLinks,
@@ -93,7 +65,6 @@ try {
   });
   allResults.push(...soResults);
 
-  // Scrape Google
   const googleResults = await scrapeGoogle({
     queries: queryVariants,
     maxResults: googleLinks,
@@ -104,7 +75,6 @@ try {
   });
   allResults.push(...googleResults);
 
-  // Scrape answer bodies (optional)
   if (includeAnswerBody) {
     await scrapeAnswerBodies({
       results: allResults,
@@ -114,17 +84,12 @@ try {
     });
   }
 
-  // ============================================================================
-  // RESULTS SUMMARY
-  // ============================================================================
-
   console.log('\n================================================');
   console.log('✅ ScrapOverflow Complete!');
   console.log(`📊 Total results: ${allResults.length}`);
   console.log(`   🟠 Stack Overflow: ${allResults.filter(r => r.source === 'stackoverflow').length}`);
   console.log(`   🔵 Google: ${allResults.filter(r => r.source === 'google').length}`);
 
-  // Language breakdown
   const langCounts = allResults.reduce((acc, r) => {
     acc[r.langDetected] = (acc[r.langDetected] || 0) + 1;
     return acc;
@@ -136,10 +101,6 @@ try {
       console.log(`   ${getLanguageFlag(lang)} ${lang.toUpperCase()}: ${count}`);
     });
   }
-
-  // ============================================================================
-  // MONETIZATION
-  // ============================================================================
 
   const processedCount = allResults.length;
   if (processedCount > 0) {

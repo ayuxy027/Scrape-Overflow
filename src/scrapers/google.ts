@@ -1,7 +1,3 @@
-/**
- * Google search scraper
- */
-
 import { PlaywrightCrawler } from 'crawlee';
 import { Actor } from 'apify';
 import { ScrapedResult, ActorInput } from '../types/index.js';
@@ -73,7 +69,7 @@ export async function scrapeGoogle(
         const cleanedUrl = cleanUrl(href);
         if (!cleanedUrl || foundUrls.has(cleanedUrl)) continue;
 
-        if (shouldFilterUrl(cleanedUrl, true)) continue; // Exclude SO and Google domains
+        if (shouldFilterUrl(cleanedUrl, true)) continue;
 
         foundUrls.add(cleanedUrl);
 
@@ -115,4 +111,3 @@ export async function scrapeGoogle(
 
   return results;
 }
-

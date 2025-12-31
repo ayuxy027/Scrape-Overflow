@@ -1,10 +1,3 @@
-/**
- * Lingo.dev translation service
- * 
- * Implements the LingoDotDevEngine SDK for AI-powered translation.
- * See admin/Lingo.md for full documentation.
- */
-
 import { LingoDotDevEngine } from 'lingo.dev/sdk';
 import { TranslationService } from '../types/index.js';
 import { DEFAULT_CONFIG } from '../config/defaults.js';
@@ -130,4 +123,3 @@ export class LingoTranslationService implements TranslationService {
     return [...new Set(queries)];
   }
 }
-

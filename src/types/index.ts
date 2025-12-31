@@ -1,7 +1,3 @@
-/**
- * Type definitions for ScrapOverflow Actor
- */
-
 export interface ActorInput {
   searchQuery?: string;
   targetLang?: string;
@@ -35,4 +31,3 @@ export interface TranslationService {
   translateQueryToLanguages(query: string, targetLangs: string[]): Promise<string[]>;
   isAvailable(): boolean;
 }
-

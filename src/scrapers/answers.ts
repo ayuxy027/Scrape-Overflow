@@ -1,7 +1,3 @@
-/**
- * Stack Overflow answer body scraper
- */
-
 import { PlaywrightCrawler } from 'crawlee';
 import { Actor } from 'apify';
 import { ScrapedResult, ActorInput } from '../types/index.js';
@@ -48,7 +44,6 @@ export async function scrapeAnswerBodies(
       let answerText = '';
 
       try {
-        // Try accepted answer first
         const acceptedAnswer = page.locator(SELECTORS.stackOverflowAcceptedAnswer).first();
         if (await acceptedAnswer.count() > 0) {
           answerText = await acceptedAnswer.textContent() || '';
@@ -59,7 +54,6 @@ export async function scrapeAnswerBodies(
 
       if (!answerText) {
         try {
-          // Fall back to first answer
           const firstAnswer = page.locator(SELECTORS.stackOverflowFirstAnswer).first();
           if (await firstAnswer.count() > 0) {
             answerText = await firstAnswer.textContent() || '';
@@ -82,8 +76,6 @@ export async function scrapeAnswerBodies(
           );
 
           results[resultIndex].answerBody = translatedAnswer;
-
-          // Push updated result to dataset
           await Actor.pushData(results[resultIndex]);
 
           console.log(`  ✓ Got answer for: ${url.slice(0, 50)}...`);
@@ -94,4 +86,3 @@ export async function scrapeAnswerBodies(
 
   await crawler.run(soUrls);
 }
-

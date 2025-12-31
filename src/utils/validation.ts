@@ -1,13 +1,6 @@
-/**
- * Input validation utilities
- */
-
 import { ActorInput } from '../types/index.js';
 import { DEFAULT_CONFIG } from '../config/defaults.js';
 
-/**
- * Validates and normalizes actor input
- */
 export function validateInput(input: ActorInput): {
   searchQuery: string;
   targetLang: string;
@@ -48,13 +41,9 @@ export function validateInput(input: ActorInput): {
   };
 }
 
-/**
- * Ensures text fields are never empty
- */
 export function ensureNonEmpty(text: string | null | undefined, fallback: string): string {
   if (!text || text.trim().length === 0) {
     return fallback;
   }
   return text.trim();
 }
-
