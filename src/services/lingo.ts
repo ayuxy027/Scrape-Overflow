@@ -101,14 +101,14 @@ export class LingoTranslationService implements TranslationService {
     const sourceLang = await this.detectLanguage(query);
 
     try {
-      const languagesToTranslate = targetLangs.filter(l => l !== sourceLang);
+      const languagesToTranslate = targetLangs.filter(l => l !== sourceLang) as any[];
       
       if (languagesToTranslate.length === 0) {
         return queries;
       }
 
       const translations = await this.engine!.batchLocalizeText(query, {
-        sourceLocale: sourceLang,
+        sourceLocale: sourceLang as any,
         targetLocales: languagesToTranslate,
         fast: true,
       });
