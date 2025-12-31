@@ -1,11 +1,13 @@
-# 🌍 ScrapOverflow
+# ScrapOverflow
 
-> **Multilingual Developer Search** powered by AI  
-> Search Stack Overflow & Google in ANY language — results auto-translated by [Lingo.dev](https://lingo.dev)
+**Multilingual Developer Search** powered by AI  
+Search Stack Overflow & Google in ANY language — results auto-translated by [Lingo.dev](https://lingo.dev)
+
+Search & Translate Developer Content in ANY Language like a Pro.
 
 ---
 
-## 🎯 The Problem
+## The Problem
 
 95% of Stack Overflow's best answers are in English. If you're a developer who thinks in Spanish, Japanese, or Hindi, you're missing out on the world's largest knowledge base.
 
@@ -13,7 +15,7 @@
 
 ---
 
-## ✨ What It Does
+## What It Does
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -21,57 +23,57 @@
 │              "メモリリーク JavaScript" (Japanese)                     │
 └───────────────────────────┬─────────────────────────────────────────┘
                             │
-                   🔄 LINGO.DEV AI
+                   LINGO.DEV AI
                             │
         ┌───────────────────┼───────────────────┐
         │                   │                   │
         ▼                   ▼                   ▼
-   🇺🇸 English         🇪🇸 Spanish        🇩🇪 German
+   English             Spanish            German
    "memory leak       "fuga memoria     "Speicherleck
     JavaScript"        JavaScript"       JavaScript"
         │                   │                   │
         └───────────────────┼───────────────────┘
                             │
-                   🔍 PARALLEL SEARCH
+                   PARALLEL SEARCH
                             │
         ┌───────────────────┴───────────────────┐
         │                                       │
         ▼                                       ▼
-   🟠 STACK OVERFLOW                      🔵 GOOGLE
+   STACK OVERFLOW                          GOOGLE
    (site:stackoverflow.com)               (general web)
         │                                       │
         └───────────────────┬───────────────────┘
                             │
-                   🔄 TRANSLATE BACK
+                   TRANSLATE BACK
                             │
                             ▼
               ┌─────────────────────────┐
-              │   📦 TRANSLATED RESULTS  │
+              │   TRANSLATED RESULTS     │
               │                         │
-              │ 🇯🇵 Title (Japanese)     │
-              │ 🇺🇸 Original (English)   │
-              │ 📝 Summary              │
-              │ 🔗 URL                  │
+              │ Title (Japanese)         │
+              │ Original (English)       │
+              │ Summary                  │
+              │ URL                      │
               └─────────────────────────┘
 ```
 
 ---
 
-## 🚀 Features
+## Features
 
 | Feature | Description |
 |---------|-------------|
-| 🌐 **Any Language Input** | Search in English, Spanish, Japanese, Chinese, Hindi, Arabic... |
-| 🔄 **Auto Translation** | Queries translated to 6 languages for maximum coverage |
-| 🎯 **Smart Results** | Results translated back to YOUR preferred language |
-| 🏷️ **Language Flags** | Visual indicators: 🇺🇸 🇪🇸 🇯🇵 🇩🇪 🇫🇷 🇨🇳 |
-| 📖 **Answer Bodies** | Optional: Scrape full SO answers (not just titles) |
-| 🔒 **Code Preserved** | Code blocks stay untouched during translation |
-| ⚡ **Fast** | Parallel searches across multiple languages |
+| **Any Language Input** | Search in English, Spanish, Japanese, Chinese, Hindi, Arabic... |
+| **Auto Translation** | Queries translated to 6 languages for maximum coverage |
+| **Smart Results** | Results translated back to YOUR preferred language |
+| **Language Flags** | Visual indicators for detected languages |
+| **Answer Bodies** | Optional: Scrape full SO answers (not just titles) |
+| **Code Preserved** | Code blocks stay untouched during translation |
+| **Fast** | Parallel searches across multiple languages |
 
 ---
 
-## ⚙️ Input Configuration
+## Input Configuration
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -85,12 +87,11 @@
 
 ### Supported Languages
 
-🇺🇸 English • 🇪🇸 Spanish • 🇫🇷 French • 🇩🇪 German • 🇯🇵 Japanese  
-🇨🇳 Chinese • 🇮🇳 Hindi • 🇧🇷 Portuguese • 🇰🇷 Korean • 🇸🇦 Arabic
+English • Spanish • French • German • Japanese • Chinese • Hindi • Portuguese • Korean • Arabic
 
 ---
 
-## 📤 Output Format
+## Output Format
 
 ### Example Result
 
@@ -104,7 +105,7 @@
   "summaryOriginal": "Detailed explanation about closures and garbage collection...",
   "langDetected": "en",
   "langTarget": "es",
-  "langFlag": "🇺🇸"
+  "langFlag": "EN"
 }
 ```
 
@@ -121,13 +122,13 @@
   "answerBody": "解決策：WeakMapを使用してください...",
   "langDetected": "en",
   "langTarget": "ja",
-  "langFlag": "🇺🇸"
+  "langFlag": "EN"
 }
 ```
 
 ---
 
-## 🔧 Setup
+## Setup
 
 ### 1. Get Your Lingo.dev API Key
 
@@ -157,29 +158,29 @@ apify push
 
 ---
 
-## 💡 Use Cases
+## Use Cases
 
-### 🤖 AI Context Building
+### AI Context Building
 Feed relevant SO discussions to ChatGPT/Claude in YOUR language:
 ```
-Query: "React hooks best practices" → Target: 🇯🇵 Japanese
+Query: "React hooks best practices" → Target: Japanese
 Result: Full context ready for Japanese developers
 ```
 
-### 🌍 Global Team Collaboration
+### Global Team Collaboration
 Your team speaks different languages? Everyone gets results in their preferred language.
 
-### 📚 Learning in Your Native Language
+### Learning in Your Native Language
 Read the world's best programming answers without language barriers.
 
-### 🔬 Research Across Languages
+### Research Across Languages
 Find solutions that only exist in German, Russian, or Japanese forums.
 
 ---
 
-## 🏆 Hackathon
+## Hackathon
 
-Built for the **Lingo × Apify Actor Hackathon** 🎉
+Built for the **Lingo × Apify Actor Hackathon**
 
 ### Requirements Met
 
@@ -195,7 +196,7 @@ Built for the **Lingo × Apify Actor Hackathon** 🎉
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **[Crawlee](https://crawlee.dev)** — Web scraping framework
 - **[Playwright](https://playwright.dev)** — Headless browser
@@ -205,7 +206,7 @@ Built for the **Lingo × Apify Actor Hackathon** 🎉
 
 ---
 
-## ⚡ Why ScrapOverflow?
+## Why ScrapOverflow?
 
 | Feature | Other Scrapers | ScrapOverflow |
 |---------|---------------|---------------|
@@ -219,55 +220,55 @@ Built for the **Lingo × Apify Actor Hackathon** 🎉
 
 ---
 
-## 📊 Example Run
+## Example Run
 
 ```
-🚀 ScrapOverflow - Multilingual Developer Search
+ScrapOverflow - Multilingual Developer Search
 ================================================
-📝 Query: "React useEffect cleanup"
-🎯 Target language: 🇪🇸 ES
-📊 SO links: 5, Google links: 5
-🔄 Translate query: true
+Query: "React useEffect cleanup"
+Target language: ES
+SO links: 5, Google links: 5
+Translate query: true
 
-🔍 Detected query language: 🇺🇸 EN
+Detected query language: EN
 
-📋 Search queries (4 variants):
+Search queries (4 variants):
    1. React useEffect cleanup
    2. React useEffect limpieza
    3. React useEffect Bereinigung
    4. React useEffect nettoyage
 
-🟠 Searching Stack Overflow for 5 results...
-  ✓ 🇺🇸 How to clean up useEffect subscriptions...
-  ✓ 🇺🇸 useEffect cleanup function not working...
-  ✓ 🇩🇪 useEffect Cleanup-Funktion richtig...
-  ✓ 🇪🇸 Limpieza correcta de useEffect...
-  ✓ 🇺🇸 Memory leak in useEffect...
+Searching Stack Overflow for 5 results...
+  - How to clean up useEffect subscriptions...
+  - useEffect cleanup function not working...
+  - useEffect Cleanup-Funktion richtig...
+  - Limpieza correcta de useEffect...
+  - Memory leak in useEffect...
 
-🔵 Searching Google for 5 results...
-  ✓ 🇺🇸 React docs: Using the Effect Hook...
-  ✓ 🇫🇷 Guide complet useEffect React...
-  ✓ 🇺🇸 Best practices for useEffect...
+Searching Google for 5 results...
+  - React docs: Using the Effect Hook...
+  - Guide complet useEffect React...
+  - Best practices for useEffect...
 
 ================================================
-✅ ScrapOverflow Complete!
-📊 Total results: 10
-   🟠 Stack Overflow: 5
-   🔵 Google: 5
+ScrapOverflow Complete!
+Total results: 10
+   Stack Overflow: 5
+   Google: 5
 
-🌍 Languages found:
-   🇺🇸 EN: 6
-   🇩🇪 DE: 2
-   🇪🇸 ES: 1
-   🇫🇷 FR: 1
+Languages found:
+   EN: 6
+   DE: 2
+   ES: 1
+   FR: 1
 ```
 
 ---
 
-## 📜 License
+## License
 
 ISC
 
 ---
 
-**ScrapOverflow** — *The world's developer knowledge, in YOUR language.* 🌍
+**ScrapOverflow** — *The world's developer knowledge, in YOUR language.*
