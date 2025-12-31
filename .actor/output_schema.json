@@ -1,11 +1,11 @@
 {
   "actorOutputSchemaVersion": 1,
-  "title": "Stack Overflow + GitHub Context Scraper Output",
+  "title": "ScrapOverflow Multilingual Results",
   "properties": {
     "dataset": {
       "type": "string",
-      "title": "Dataset with scraped results",
-      "description": "Stack Overflow questions and GitHub profile data",
+      "title": "Translated Search Results",
+      "description": "Stack Overflow and Google results with automatic translation",
       "template": "{{links.apiDefaultDatasetUrl}}/items"
     }
   }

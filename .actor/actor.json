@@ -1,13 +1,13 @@
 {
   "actorSpecification": 1,
   "name": "scrape-overflow",
-  "title": "Stack Overflow + GitHub Context Scraper",
-  "description": "Scrape SO questions + GitHub profiles to feed perfect context to ChatGPT/Claude without spending tokens.",
+  "title": "ScrapOverflow - Multilingual Developer Search",
+  "description": "Search Stack Overflow & Google in ANY language. Auto-translates queries and results using Lingo.dev AI. Perfect context for ChatGPT/Claude.",
   "version": "1.0",
   "buildTag": "latest",
   "meta": {
     "templateId": "ts-crawlee-playwright",
-    "generatedBy": "Claude Sonnet 4.5"
+    "generatedBy": "Claude Opus 4"
   },
   "input": "./input_schema.json",
   "storages": {

@@ -1,205 +1,161 @@
-import { Actor } from 'apify';
-import { PlaywrightCrawler } from 'crawlee';
+/**
+ * ScrapOverflow - Main Actor Entry Point
+ * 
+ * Orchestrates multilingual Stack Overflow and Google search scraping
+ * with AI-powered translation via Lingo.dev
+ */
 
-interface Input {
-  searchQuery?: string;
-  stackOverflowLinks?: number;
-  googleLinks?: number;
-  proxyConfiguration?: {
-    useApifyProxy?: boolean;
-    proxyUrls?: string[];
-  };
-}
+import { Actor } from 'apify';
+import { ActorInput, ScrapedResult } from './types/index.js';
+import { validateInput } from './utils/validation.js';
+import { LingoTranslationService } from './services/lingo.js';
+import { scrapeStackOverflow } from './scrapers/stackoverflow.js';
+import { scrapeGoogle } from './scrapers/google.js';
+import { scrapeAnswerBodies } from './scrapers/answers.js';
+import { getLanguageFlag } from './config/constants.js';
+import { DEFAULT_CONFIG } from './config/defaults.js';
 
 await Actor.init();
 
-const input = (await Actor.getInput<Input>()) ?? {};
+try {
+  // ============================================================================
+  // INPUT VALIDATION & CONFIGURATION
+  // ============================================================================
 
-// Apply defaults
-const searchQuery = input.searchQuery || 'crawlee timeout error';
-const stackOverflowLinks = input.stackOverflowLinks ?? 5;
-const googleLinks = input.googleLinks ?? 5;
+  const rawInput = (await Actor.getInput<ActorInput>()) ?? {};
+  const config = validateInput(rawInput);
 
-// Input validation
-if (!searchQuery) {
-  throw new Error('You must provide a searchQuery');
-}
-
-console.log('Starting scraper with:', { 
+  const {
   searchQuery, 
+    targetLang,
   stackOverflowLinks, 
-  googleLinks 
-});
+    googleLinks,
+    translateQuery,
+    includeAnswerBody,
+    lingoApiKey,
+  } = config;
 
-// Track found links to avoid duplicates
-const foundLinks = new Set<string>();
+  // ============================================================================
+  // INITIALIZATION LOG
+  // ============================================================================
 
-// Track processed items for monetization
-let processedItemsCount = 0;
+  console.log('🚀 ScrapOverflow - Multilingual Developer Search');
+  console.log('================================================');
+  console.log(`📝 Query: "${searchQuery}"`);
+  console.log(`🎯 Target language: ${getLanguageFlag(targetLang)} ${targetLang.toUpperCase()}`);
+  console.log(`📊 SO links: ${stackOverflowLinks}, Google links: ${googleLinks}`);
+  console.log(`🔄 Translate query: ${translateQuery}`);
+  console.log(`📖 Include answers: ${includeAnswerBody}`);
+  console.log('');
 
-// 1. Stack Overflow links (via Google with Playwright - real browser)
-if (searchQuery && stackOverflowLinks > 0) {
-  console.log(`\n🔍 Searching for ${stackOverflowLinks} Stack Overflow links...`);
-  
-  const soCrawler = new PlaywrightCrawler({
-    maxRequestsPerCrawl: 5,
-    proxyConfiguration: input.proxyConfiguration?.useApifyProxy 
-      ? await Actor.createProxyConfiguration()
-      : undefined,
-    async requestHandler({ request, page }) {
-      console.log('Processing Stack Overflow search:', request.url);
-      
-      // Wait for page to load
-      await page.waitForLoadState('domcontentloaded');
-      
-      const pageTitle = await page.title();
-      console.log('Page title:', pageTitle);
-      
-      // Check for CAPTCHA
-      const bodyText = await page.locator('body').textContent();
-      if (bodyText?.toLowerCase().includes('unusual traffic') || bodyText?.toLowerCase().includes('captcha')) {
-        console.log('⚠️ CAPTCHA detected!');
-        return;
-      }
-      
-      // Wait a bit for dynamic content
-      await page.waitForTimeout(2000);
-      
-      // Get all Stack Overflow links
-      const soLinks = await page.locator('a[href*="stackoverflow.com/questions"]').all();
-      console.log(`Found ${soLinks.length} Stack Overflow links on page`);
-      
-      let resultCount = 0;
-      for (const link of soLinks) {
-        if (foundLinks.size >= stackOverflowLinks) break;
-        
-        const href = await link.getAttribute('href');
-        if (!href) continue;
-        
-        // Clean URL
-        const cleanUrl = href.includes('url?q=') 
-          ? new URL(href).searchParams.get('q') || href 
-          : href;
-        
-        if (!foundLinks.has(cleanUrl)) {
-          foundLinks.add(cleanUrl);
-          resultCount++;
-          
-          const title = (await link.textContent())?.trim() || 'Stack Overflow Question';
-          
-          // Try to get snippet
-          const parent = link.locator('xpath=ancestor::div[contains(@class, "g") or @data-hveid][1]');
-          const snippetText = await parent.textContent().catch(() => '');
-          const snippet = snippetText?.slice(0, 200) || title;
-          
-          console.log(`✓ SO #${resultCount}: ${title.slice(0, 60)}...`);
-          
-          await Actor.pushData({
-            source: 'stackoverflow',
-            url: cleanUrl,
-            title,
-            summary: snippet,
-          });
-          processedItemsCount++;
-        }
-      }
-      
-      console.log(`Found ${foundLinks.size} Stack Overflow links total`);
-    },
+  // ============================================================================
+  // TRANSLATION SERVICE INITIALIZATION
+  // ============================================================================
+
+  const translationService = new LingoTranslationService({
+    apiKey: lingoApiKey,
   });
+  const translationAvailable = await translationService.initialize();
 
-  // Google search: site:stackoverflow.com + query
-  const soSearchUrl = `https://www.google.com/search?q=site:stackoverflow.com+${encodeURIComponent(searchQuery)}&num=50`;
-  console.log('Fetching:', soSearchUrl);
-  await soCrawler.run([soSearchUrl]);
-}
+  if (!translationAvailable && lingoApiKey) {
+    console.log('⚠️ Lingo.dev authentication failed, continuing without translation');
+  } else if (!lingoApiKey) {
+    console.log('⚠️ No Lingo.dev API key provided. Translation features disabled.');
+    console.log('   Set lingoApiKey in input or LINGODOTDEV_API_KEY env var.');
+  } else {
+    console.log('✅ Lingo.dev translation service initialized');
+  }
 
-// 2. General Google search links
-if (searchQuery && googleLinks > 0) {
-  console.log(`\n🌐 Searching for ${googleLinks} general Google links...`);
-  
-  const googleCrawler = new PlaywrightCrawler({
-    maxRequestsPerCrawl: 5,
-    proxyConfiguration: input.proxyConfiguration?.useApifyProxy 
-      ? await Actor.createProxyConfiguration()
-      : undefined,
-    async requestHandler({ request, page }) {
-      console.log('Processing Google search:', request.url);
-      
-      // Wait for page to load
-      await page.waitForLoadState('domcontentloaded');
-      
-      const pageTitle = await page.title();
-      console.log('Page title:', pageTitle);
-      
-      // Check for CAPTCHA
-      const bodyText = await page.locator('body').textContent();
-      if (bodyText?.toLowerCase().includes('unusual traffic') || bodyText?.toLowerCase().includes('captcha')) {
-        console.log('⚠️ CAPTCHA detected!');
-        return;
-      }
-      
-      // Wait a bit for dynamic content
-      await page.waitForTimeout(2000);
-      
-      // Get all result links
-      const searchLinks = await page.locator('#search a[href^="http"]').all();
-      console.log(`Found ${searchLinks.length} potential result links`);
-      
-      let resultCount = 0;
-      for (const link of searchLinks) {
-        if (foundLinks.size >= (stackOverflowLinks + googleLinks)) break;
-        
-        const href = await link.getAttribute('href');
-        if (!href || href.includes('google.com') || href.includes('gstatic.com')) continue;
-        
-        if (!foundLinks.has(href)) {
-          foundLinks.add(href);
-          resultCount++;
-          
-          const title = (await link.textContent())?.trim() || 'Search Result';
-          
-          // Try to get snippet from parent
-          const parent = link.locator('xpath=ancestor::div[contains(@class, "g") or @data-hveid][1]');
-          const snippetText = await parent.textContent().catch(() => '');
-          const snippet = snippetText?.slice(0, 200) || title;
-          
-          console.log(`✓ Google #${resultCount}: ${title.slice(0, 60)}...`);
-          
-          await Actor.pushData({
-            source: 'google',
-            url: href,
-            title,
-            summary: snippet,
-          });
-          processedItemsCount++;
-        }
-      }
-      
-      console.log(`Found ${foundLinks.size} total links (SO + Google)`);
-    },
+  // ============================================================================
+  // QUERY TRANSLATION
+  // ============================================================================
+
+  const queryVariants = translateQuery
+    ? await translationService.translateQueryToLanguages(searchQuery)
+    : [searchQuery];
+
+  console.log(`\n📋 Search queries (${queryVariants.length} variants):`);
+  queryVariants.forEach((q, i) => console.log(`   ${i + 1}. ${q}`));
+
+  // ============================================================================
+  // SCRAPING EXECUTION
+  // ============================================================================
+
+  const allResults: ScrapedResult[] = [];
+
+  // Scrape Stack Overflow
+  const soResults = await scrapeStackOverflow({
+    queries: queryVariants,
+    maxResults: stackOverflowLinks,
+    targetLang,
+    translationService,
+    proxyConfiguration: rawInput.proxyConfiguration,
   });
+  allResults.push(...soResults);
 
-  // Regular Google search (no site: filter)
-  const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}&num=50`;
-  console.log('Fetching:', googleSearchUrl);
-  await googleCrawler.run([googleSearchUrl]);
-}
+  // Scrape Google
+  const googleResults = await scrapeGoogle({
+    queries: queryVariants,
+    maxResults: googleLinks,
+    targetLang,
+    translationService,
+    proxyConfiguration: rawInput.proxyConfiguration,
+    existingResultsCount: soResults.length,
+  });
+  allResults.push(...googleResults);
 
-console.log('\n✅ Scraping complete!');
-console.log(`Total unique links found: ${foundLinks.size}`);
+  // Scrape answer bodies (optional)
+  if (includeAnswerBody) {
+    await scrapeAnswerBodies({
+      results: allResults,
+      targetLang,
+      translationService,
+      proxyConfiguration: rawInput.proxyConfiguration,
+    });
+  }
 
-// Charge for processed items
-if (processedItemsCount > 0) {
+  // ============================================================================
+  // RESULTS SUMMARY
+  // ============================================================================
+
+  console.log('\n================================================');
+  console.log('✅ ScrapOverflow Complete!');
+  console.log(`📊 Total results: ${allResults.length}`);
+  console.log(`   🟠 Stack Overflow: ${allResults.filter(r => r.source === 'stackoverflow').length}`);
+  console.log(`   🔵 Google: ${allResults.filter(r => r.source === 'google').length}`);
+
+  // Language breakdown
+  const langCounts = allResults.reduce((acc, r) => {
+    acc[r.langDetected] = (acc[r.langDetected] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  if (Object.keys(langCounts).length > 0) {
+    console.log('\n🌍 Languages found:');
+    Object.entries(langCounts).forEach(([lang, count]) => {
+      console.log(`   ${getLanguageFlag(lang)} ${lang.toUpperCase()}: ${count}`);
+    });
+  }
+
+  // ============================================================================
+  // MONETIZATION
+  // ============================================================================
+
+  const processedCount = allResults.length;
+  if (processedCount > 0) {
   try {
     await Actor.charge({
       eventName: 'result',
-      count: processedItemsCount,
-    });
-    console.log(`💰 Charged for ${processedItemsCount} result items`);
-  } catch (err) {
-    console.log(`📊 Processed ${processedItemsCount} result items (monetization not configured yet)`);
+        count: processedCount,
+      });
+      console.log(`\n💰 Charged for ${processedCount} results`);
+    } catch {
+      console.log(`\n📊 Processed ${processedCount} results`);
+    }
   }
+} catch (error) {
+  console.error('❌ Fatal error:', error);
+  throw error;
+} finally {
+  await Actor.exit();
 }
-
-await Actor.exit();

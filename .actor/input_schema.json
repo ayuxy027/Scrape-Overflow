@@ -1,18 +1,27 @@
 {
-  "title": "Stack Overflow + GitHub Context Scraper",
+  "title": "ScrapOverflow - Multilingual Developer Search",
   "type": "object",
   "schemaVersion": 1,
   "properties": {
     "searchQuery": {
       "type": "string",
-      "title": "Stack Overflow Search Query",
-      "description": "What you want to search (e.g. 'puppeteer login not working')",
+      "title": "Search Query",
+      "description": "What you want to search (supports any language, UTF-8, emoji). E.g. 'puppeteer login not working' or 'メモリリーク JavaScript'",
       "prefill": "crawlee timeout error",
       "editor": "textfield"
     },
+    "targetLang": {
+      "type": "string",
+      "title": "Target Language",
+      "description": "Translate results to this language (ISO 639-1 code)",
+      "default": "en",
+      "enum": ["en", "es", "fr", "de", "ja", "zh", "hi", "pt", "ko", "ar"],
+      "enumTitles": ["🇺🇸 English", "🇪🇸 Spanish", "🇫🇷 French", "🇩🇪 German", "🇯🇵 Japanese", "🇨🇳 Chinese", "🇮🇳 Hindi", "🇧🇷 Portuguese", "🇰🇷 Korean", "🇸🇦 Arabic"],
+      "editor": "select"
+    },
     "stackOverflowLinks": {
       "type": "integer",
-      "title": "Stack Overflow Links",
+      "title": "Stack Overflow Results",
       "description": "Number of Stack Overflow links to return (0-50)",
       "minimum": 0,
       "maximum": 50,
@@ -21,12 +30,31 @@
     },
     "googleLinks": {
       "type": "integer",
-      "title": "Google Search Links",
+      "title": "Google Search Results",
       "description": "Number of general Google search links to return (0-50)",
       "minimum": 0,
       "maximum": 50,
       "default": 5,
       "editor": "number"
+    },
+    "translateQuery": {
+      "type": "boolean",
+      "title": "Translate Query",
+      "description": "Translate your query to find results in multiple languages (uses Lingo.dev credits)",
+      "default": true
+    },
+    "includeAnswerBody": {
+      "type": "boolean",
+      "title": "Include Answer Body",
+      "description": "Scrape the top-voted answer from Stack Overflow (slower but more context)",
+      "default": false
+    },
+    "lingoApiKey": {
+      "type": "string",
+      "title": "Lingo.dev API Key",
+      "description": "Your Lingo.dev API key for translation (or set LINGODOTDEV_API_KEY env var)",
+      "editor": "textfield",
+      "isSecret": true
     },
     "proxyConfiguration": {
       "title": "Proxy Configuration",

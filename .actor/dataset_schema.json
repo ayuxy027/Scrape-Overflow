@@ -8,37 +8,67 @@
         "enum": ["stackoverflow", "google"],
         "description": "Data source (Stack Overflow or Google)"
       },
-      "title": {
-        "type": "string",
-        "description": "Question title or page title"
-      },
       "url": {
         "type": "string",
         "format": "uri",
         "description": "URL to the question or page"
       },
+      "title": {
+        "type": "string",
+        "description": "Translated title (in target language)"
+      },
+      "titleOriginal": {
+        "type": "string",
+        "description": "Original title before translation"
+      },
       "summary": {
         "type": "string",
-        "description": "Brief summary or snippet from search results"
+        "description": "Translated summary/snippet (in target language)"
+      },
+      "summaryOriginal": {
+        "type": "string",
+        "description": "Original summary before translation"
+      },
+      "answerBody": {
+        "type": "string",
+        "description": "Top-voted answer body (if includeAnswerBody=true)"
+      },
+      "langDetected": {
+        "type": "string",
+        "description": "Detected language of original content (ISO 639-1)"
+      },
+      "langTarget": {
+        "type": "string",
+        "description": "Target language for translation (ISO 639-1)"
+      },
+      "langFlag": {
+        "type": "string",
+        "description": "Emoji flag for detected language"
       }
     },
-    "required": ["source", "title", "url", "summary"]
+    "required": ["source", "url", "title", "summary"]
   },
   "views": {
     "overview": {
       "title": "Overview",
-      "description": "All scraped results from Stack Overflow and Google",
+      "description": "All scraped results with translations",
       "transformation": {
         "fields": [
+          "langFlag",
           "source",
           "title",
           "url",
-          "summary"
+          "summary",
+          "langDetected"
         ]
       },
       "display": {
         "component": "table",
         "properties": {
+          "langFlag": {
+            "label": "🌐",
+            "format": "text"
+          },
           "source": {
             "label": "Source",
             "format": "text"
@@ -53,6 +83,73 @@
           },
           "summary": {
             "label": "Summary",
+            "format": "text"
+          },
+          "langDetected": {
+            "label": "Lang",
+            "format": "text"
+          }
+        }
+      }
+    },
+    "detailed": {
+      "title": "Detailed (with originals)",
+      "description": "Full results including original text",
+      "transformation": {
+        "fields": [
+          "langFlag",
+          "source",
+          "title",
+          "titleOriginal",
+          "url",
+          "summary",
+          "summaryOriginal",
+          "answerBody",
+          "langDetected",
+          "langTarget"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "langFlag": {
+            "label": "🌐",
+            "format": "text"
+          },
+          "source": {
+            "label": "Source",
+            "format": "text"
+          },
+          "title": {
+            "label": "Title (Translated)",
+            "format": "text"
+          },
+          "titleOriginal": {
+            "label": "Title (Original)",
+            "format": "text"
+          },
+          "url": {
+            "label": "URL",
+            "format": "link"
+          },
+          "summary": {
+            "label": "Summary (Translated)",
+            "format": "text"
+          },
+          "summaryOriginal": {
+            "label": "Summary (Original)",
+            "format": "text"
+          },
+          "answerBody": {
+            "label": "Answer",
+            "format": "text"
+          },
+          "langDetected": {
+            "label": "Detected",
+            "format": "text"
+          },
+          "langTarget": {
+            "label": "Target",
             "format": "text"
           }
         }
